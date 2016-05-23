@@ -76,7 +76,12 @@ yum -y install sudo wget vim make zip unzip git chkconfig nano curl perl-libwww-
 publicip=$(curl ipecho.net/plain)
 
 #buat file log proses.
+logfile=$_now.log
+touch $_now.log
+exec > >(tee $_now.log)
+exec 2>&1
 
+_now=$(date '+%Y%m%d-%H%M%S%N')
 logfile=$_now.log
 touch $_now.log
 exec > >(tee $_now.log)
@@ -392,7 +397,7 @@ echo -e " email password : " $passu
 $reset
 $orange
 echo -e "####################################################################"
-echo -e " Selamat Menggunakan :)                 (C)2016 Script By Farindra  "
+echo -e "                                         (C)2016 Script By Farindra  "
 echo -e "####################################################################"
 echo -e "Semua data log ini bisa Anda lihat di '/root/$logfile'"
 $reset
