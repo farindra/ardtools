@@ -1,0 +1,27 @@
+$TTL 14400
+@ 86400 IN SOA farindra.xyz. ekaputra.farindra.com. (
+        2016052402  ; serial, todays date+todays
+        3600		; refresh, seconds
+        7200		; retry, seconds
+        1209600		; expire, seconds
+        86400 )		; minimum, seconds
+
+farindra.xyz.     86400 IN NS ns1.telulas.net.
+farindra.xyz.     86400 IN NS ns2.telulas.net.
+ns1               14400 IN A 31.220.111.69
+ns2               14400 IN A 31.220.111.69
+farindra.xyz.     14400 IN A 31.220.111.69
+mail.farindra.xyz.      IN A 31.220.111.69
+farindra.xyz.           IN MX 12 mail.farindra.xyz.
+webmaill          14400 IN CNAME farindra.xyz.
+www               14400 IN CNAME farindra.xyz.
+ftp               14400 IN CNAME farindra.xyz.
+webmin            14400 IN CNAME farindra.xyz.
+
+default_domainkey 14400 IN TXT ""
+farindra.xyz.     14400 IN TXT "v=spf1 +a +mx +ip4:31.220.111.69 ~all"
+farindra.xyz.     14400 IN TXT (
+        "v=DKIM1;t=s;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaQ/gjMDV3xIy1oTjdsZc2CGqk"
+        "FWP2/rHHk/M+yW2+IV6lTXsFrGt26r+lxjgvfSBYclSBQ+G6mfYG1525loi7DM5E"
+        "j9WkCZ57Eohw71hyJgFGIbZCYzMpmnSGchl2GG3ojXCTdXbTgOSr4YqogCrqwJ01"
+        "k7FePOw3I0JIhtk0iQIDAQAB")

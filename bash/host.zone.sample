@@ -1,6 +1,6 @@
 $TTL 14400
 @ 86400 IN SOA %%host%%. %%email%%. (
-        %%today%%   ; serial, todays date+todays
+        %%serial%%  ; serial, todays date+todays
         3600        ; refresh, seconds
         7200        ; retry, seconds
         1209600     ; expire, seconds

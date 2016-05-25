@@ -335,24 +335,62 @@ yum -y install bind bind-utils bind-libs
 echo echo -e "Setting config :"
 
 #named.conf
-wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
-sed -i 's/%%host%%/$nmhost/g' named.sample.conf
-sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
-sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
-sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.conf.sample
+sed -i "s/%%host%%/$nmhost/g" named.conf.sample
+sed -i "s/%%hostns1%%/$nshosta/g" named.conf.sample
+sed -i "s/%%hostns2%%/$nshostb/g" named.conf.sample
+sed -i "s/%%domain%%/$nmdomain/g" named.conf.sample
 cp /etc/named.conf /etc/named.conf.$_now.bak -f
-cp /named.sample.conf /etc/named.conf -f
-
-#host.conf
-wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
-sed -i 's/%%host%%/$nmhost/g' named.sample.conf
-sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
-sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
-sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
-cp /etc/named.conf /etc/named.conf.$_now.bak -f
-cp /named.sample.conf /etc/named.conf -f
-
-
+cp /named.conf.sample /etc/named.conf -f
+echo echo -e "named.conf ........................... Done"
+#host.zone
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/host.zone.sample
+sed -i "s/%%host%%/$nmhost/g" host.zone.sample
+sed -i "s/%%hostns1%%/$nshosta/g" host.zone.sample
+sed -i "s/%%hostns2%%/$nshostb/g" host.zone.sample
+sed -i "s/%%domain%%/$nmdomain/g" host.zone.sample
+sed -i "s/%%email%%/${emailnya//@/.}/g" host.zone.sample
+sed -i "s/%%serial%%/$_serial/g" host.zone.sample
+sed -i "s/%%ip%%/$publicip/g" host.zone.sample
+#cp /etc/named.conf /etc/named.conf.$_now.bak -f
+cp /host.zone.sample /etc/$nmhost.zone -f
+echo echo -e "$nmhost.zone ........................... Done"
+#ns1.host.zone
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/ns1.host.zone.sample
+sed -i "s/%%host%%/$nmhost/g" host.zone.sample
+sed -i "s/%%hostns1%%/$nshosta/g" ns1.host.zone.sample
+sed -i "s/%%hostns2%%/$nshostb/g" ns1.host.zone.sample
+sed -i "s/%%domain%%/$nmdomain/g" ns1.host.zone.sample
+sed -i "s/%%email%%/${emailnya//@/.}/g" ns1.host.zone.sample
+sed -i "s/%%serial%%/$_serial/g" ns1.host.zone.sample
+sed -i "s/%%ip%%/192.35.51.30/g" ns1.host.zone.sample
+#cp /etc/$nshosta.zone /etc/$nshosta.zone.$_now.bak -f
+cp /ns1.host.zone.sample /etc/$nshosta.zone -f
+echo echo -e "$nshosta.zone ........................... Done"
+#ns2.host.zone
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/ns1.host.zone.sample
+sed -i "s/%%host%%/$nmhost/g" ns1.host.zone.sample
+sed -i "s/%%hostns1%%/$nshosta/g" ns1.host.zone.sample
+sed -i "s/%%hostns2%%/$nshostb/g" ns1.host.zone.sample
+sed -i "s/%%domain%%/$nmdomain/g" ns1.host.zone.sample
+sed -i "s/%%email%%/${emailnya//@/.}/g" ns1.host.zone.sample
+sed -i "s/%%serial%%/$_serial/g" ns1.host.zone.sample
+sed -i "s/%%ip%%/192.31.80.30/g" ns1.host.zone.sample
+#cp /etc/$nshostb.zone /etc/$nshostb.zone.$_now.bak -f
+cp /ns2.host.zone.sample /etc/$nshostb.zone -f
+echo echo -e "named.conf ........................... Done"
+#domain.zone
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/domain.zone.sample
+sed -i "s/%%host%%/$nmhost/g" domain.zone.sample
+sed -i "s/%%hostns1%%/$nshosta/g" domain.zone.sample
+sed -i "s/%%hostns2%%/$nshostb/g" domain.zone.sample
+sed -i "s/%%domain%%/$nmdomain/g" domain.zone.sample
+sed -i "s/%%email%%/${emailnya//@/.}/g" domain.zone.sample
+sed -i "s/%%serial%%/$_serial/g" domain.zone.sample
+sed -i "s/%%ip%%/192.31.80.30/g" domain.zone.sample
+#cp /etc/$nmdomain.zone /etc/$nmdomain.zone.$_now.bak -f
+cp /domain.zone.sample /etc/$nmdomain.zone -f
+echo echo -e "named.conf ........................... Done"
 #------------------------ debug --------------------------------
 chkconfig httpd on
 chkconfig mysqld on
