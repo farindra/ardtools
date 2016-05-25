@@ -1,0 +1,15 @@
+$TTL 14400
+@ 86400 IN SOA %%host%%. %%email%%. (
+        %%today%%   ; serial, todays date+todays
+        3600        ; refresh, seconds
+        7200        ; retry, seconds
+        1209600     ; expire, seconds
+        86400 )     ; minimum, seconds
+
+%%host%%. 86400 IN NS %%hostns1%%.
+%%host%%. 86400 IN NS %%hostns2%%.
+%%host%%. 14400 IN A     %%ip%%
+%%host%%. 14400 IN MX 0  %%host%%.
+mail             14400 IN CNAME %%host%%.
+www              14400 IN CNAME %%host%%.
+ftp              14400 IN CNAME %%host%%.

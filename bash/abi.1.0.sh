@@ -23,11 +23,11 @@ green='tput setaf 2'
 orange='tput setaf 3'
 reset='tput sgr0'
 _now=$(date '+%Y%m%d-%H%M%S%N')
-
+_serial=$(date '+%Y%m%d0%u')
 
 cd /root
 
-jumpto 13
+#jumpto CONFIG
 #blok cek kompetibel
 #==============================================================
 
@@ -115,7 +115,6 @@ read -e -p "Apakah Anda setuju untuk melanjutkan (y/t)? " yt
 jumpto UTAMA
 done
 
-CONFIG:
 #blok Installasi
 #==============================================================
 clear
@@ -134,6 +133,7 @@ read -e -p "| Nama Hostname               : " -i $nmhost nmhost
 read -e -p "| Nama ns1 Hostname           : " -i "ns1.contohnya.net" nshosta
 read -e -p "| Nama ns2 Hostname           : " -i "ns2.contohnya.net" nshostb
 read -e -p "| Password universal          : " -i "password" passu
+read -e -p "| Email Anda                  : " -i "contohnya@gmail.com" emailnya
 echo -e "------------------------- php.ini ----------------------------"
 read -e -p "| Mode rewrite aktif (y/t)    : " -i "y" apamode
 echo -e "-------------------------- MySQL -----------------------------"
@@ -188,7 +188,7 @@ fi
 #    [Yy]* ) break;;
 #    [Nn]* ) exit;
 #  esac
-
+jumpto 13
 
 #set timezone ke Asia/Jakarta
 echo .
@@ -333,11 +333,25 @@ yum -y update
 yum -y install bind bind-utils bind-libs
 
 echo echo -e "Setting config :"
+
+#named.conf
 wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
 sed -i 's/%%host%%/$nmhost/g' named.sample.conf
 sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
 sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
 sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
+cp /etc/named.conf /etc/named.conf.$_now.bak -f
+cp /named.sample.conf /etc/named.conf -f
+
+#host.conf
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
+sed -i 's/%%host%%/$nmhost/g' named.sample.conf
+sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
+sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
+sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
+cp /etc/named.conf /etc/named.conf.$_now.bak -f
+cp /named.sample.conf /etc/named.conf -f
+
 
 #------------------------ debug --------------------------------
 chkconfig httpd on
@@ -453,8 +467,10 @@ sed -i "s/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/va
 echo echo -e "Setting config BIND :"
 set -x
 wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
-sed -i 's/%%host%%/$nmhost/g' named.sample.conf
-sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
-sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
-sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
+sed -i "s/%%host%%/$nmhost/g" named.sample.conf
+sed -i "s/%%hostns1%%/$nshosta/g" named.sample.conf
+sed -i "s/%%hostns2%%/$nshostb/g" named.sample.conf
+sed -i "s/%%domain%%/$nmdomain/g" named.sample.conf
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
+
 set +x
