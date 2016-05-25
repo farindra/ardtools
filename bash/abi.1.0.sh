@@ -259,7 +259,7 @@ yum -y install php56w php56w-opcache
 
 echo -e "------------------------ MySQL ----------------------------"
 yum -y update
-wget http://repo.mysql.com/mysql-community-release-el6-4.noarch.rpm
+wget -N http://repo.mysql.com/mysql-community-release-el6-4.noarch.rpm
 rpm -ivh mysql-community-release-el6-4.noarch.rpm
 #yum repolist enabled | grep "mysql.*-community.*"
 #yum repolist all | grep mysql
@@ -333,7 +333,11 @@ yum -y update
 yum -y install bind bind-utils bind-libs
 
 echo echo -e "Setting config :"
-sed -i 's/%%host%%/$nmhost/g' nm.conf
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
+sed -i 's/%%host%%/$nmhost/g' named.sample.conf
+sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
+sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
+sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
 
 #------------------------ debug --------------------------------
 chkconfig httpd on
@@ -446,4 +450,11 @@ sed -i "s/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/va
 
 #EOF
 13:
-
+echo echo -e "Setting config BIND :"
+set -x
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/named.sample.conf
+sed -i 's/%%host%%/$nmhost/g' named.sample.conf
+sed -i 's/%%hostns1%%/$nshosta/g' named.sample.conf
+sed -i 's/%%hostns2%%/$nshostb/g' named.sample.conf
+sed -i 's/%%domain%%/$nmdomain/g' named.sample.conf
+set +x
