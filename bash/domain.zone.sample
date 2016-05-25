@@ -1,27 +1,27 @@
 $TTL 14400
-@ 86400 IN SOA farindra.xyz. ekaputra.farindra.com. (
-        2016052402  ; serial, todays date+todays
+@ 86400 IN SOA %%domain%%. %%email%%. (
+        %%serial%%  ; serial, todays date+todays
         3600		; refresh, seconds
         7200		; retry, seconds
         1209600		; expire, seconds
         86400 )		; minimum, seconds
 
-farindra.xyz.     86400 IN NS ns1.telulas.net.
-farindra.xyz.     86400 IN NS ns2.telulas.net.
-ns1               14400 IN A 31.220.111.69
-ns2               14400 IN A 31.220.111.69
-farindra.xyz.     14400 IN A 31.220.111.69
-mail.farindra.xyz.      IN A 31.220.111.69
-farindra.xyz.           IN MX 12 mail.farindra.xyz.
-webmaill          14400 IN CNAME farindra.xyz.
-www               14400 IN CNAME farindra.xyz.
-ftp               14400 IN CNAME farindra.xyz.
-webmin            14400 IN CNAME farindra.xyz.
+%%domain%%.     86400 IN NS %%hostns1%%.
+%%domain%%.     86400 IN NS %%hostns2%%.
+ns1               14400 IN A %%ip%%
+ns2               14400 IN A %%ip%%
+%%domain%%.     14400 IN A %%ip%%
+mail.%%domain%%.      IN A %%ip%%
+%%domain%%.           IN MX 12 mail.%%domain%%.
+maill             14400 IN CNAME %%domain%%.
+www               14400 IN CNAME %%domain%%.
+ftp               14400 IN CNAME %%domain%%.
+webmin            14400 IN CNAME %%domain%%.
 
 default_domainkey 14400 IN TXT ""
-farindra.xyz.     14400 IN TXT "v=spf1 +a +mx +ip4:31.220.111.69 ~all"
-farindra.xyz.     14400 IN TXT (
-        "v=DKIM1;t=s;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaQ/gjMDV3xIy1oTjdsZc2CGqk"
-        "FWP2/rHHk/M+yW2+IV6lTXsFrGt26r+lxjgvfSBYclSBQ+G6mfYG1525loi7DM5E"
-        "j9WkCZ57Eohw71hyJgFGIbZCYzMpmnSGchl2GG3ojXCTdXbTgOSr4YqogCrqwJ01"
-        "k7FePOw3I0JIhtk0iQIDAQAB")
+%%domain%%.     14400 IN TXT "v=spf1 +a +mx +ip4:%%ip%% ~all"
+1464166143.farindra._domainkey.%%domain%%. IN TXT (
+        "v=DKIM1;t=s;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwiPVDJcI0YRDq82YQeYO0ZTog"
+        "lkYJm3X/4F0E4MoIG/ZLHeFdoyLvMG62kF6SjlwBMk7MU2PvcJWfiabpyLwNTJEj"
+        "9pT9hxD+xOmczJXhXfGXwplP3uc2FPZTPEaQGVCWl3U7Z/cuJIsxhbZXuyIgP317"
+        "uIrfazX+w9rPJXgMbQIDAQAB")

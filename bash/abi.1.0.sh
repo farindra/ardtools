@@ -77,9 +77,9 @@ publicip=$(curl ipecho.net/plain)
 
 #buat file log proses.
 logfile=abi.$_now.log
-exec 3>&1 4>&2
-trap 'exec 2>&4 1>&3' 0 1 2 3
-exec 1>$logfile 2>&1
+#exec 3>&1 4>&2
+#trap 'exec 2>&4 1>&3' 0 1 2 3
+#exec 1>$logfile 2>&1
 
 
 UTAMA:
@@ -523,22 +523,10 @@ sed -i "s/%%domain%%/$nmdomain/g" host.zone.sample
 sed -i "s/%%email%%/${emailnya//@/.}/g" host.zone.sample
 sed -i "s/%%serial%%/$_serial/g" host.zone.sample
 sed -i "s/%%ip%%/$publicip/g" host.zone.sample
-#cp /etc/named.conf /etc/named.conf.$_now.bak -f
-cp host.zone.sample /etc/$nmhost.zone -f
+#cp /var/named/$nmhost.zone /var/named/$nmhost.zone.$_now.bak -f
+cp host.zone.sample /var/named/$nmhost.zone -f
 echo echo -e "$nmhost.zone ........................... Done"
 #ns1.host.zone
-wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/ns1.host.zone.sample
-sed -i "s/%%host%%/$nmhost/g" host.zone.sample
-sed -i "s/%%hostns1%%/$nshosta/g" ns1.host.zone.sample
-sed -i "s/%%hostns2%%/$nshostb/g" ns1.host.zone.sample
-sed -i "s/%%domain%%/$nmdomain/g" ns1.host.zone.sample
-sed -i "s/%%email%%/${emailnya//@/.}/g" ns1.host.zone.sample
-sed -i "s/%%serial%%/$_serial/g" ns1.host.zone.sample
-sed -i "s/%%ip%%/192.35.51.30/g" ns1.host.zone.sample
-#cp /etc/$nshosta.zone /etc/$nshosta.zone.$_now.bak -f
-cp ns1.host.zone.sample /etc/$nshosta.zone -f
-echo echo -e "$nshosta.zone ........................... Done"
-#ns2.host.zone
 wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/ns1.host.zone.sample
 sed -i "s/%%host%%/$nmhost/g" ns1.host.zone.sample
 sed -i "s/%%hostns1%%/$nshosta/g" ns1.host.zone.sample
@@ -546,9 +534,21 @@ sed -i "s/%%hostns2%%/$nshostb/g" ns1.host.zone.sample
 sed -i "s/%%domain%%/$nmdomain/g" ns1.host.zone.sample
 sed -i "s/%%email%%/${emailnya//@/.}/g" ns1.host.zone.sample
 sed -i "s/%%serial%%/$_serial/g" ns1.host.zone.sample
-sed -i "s/%%ip%%/192.31.80.30/g" ns1.host.zone.sample
-#cp /etc/$nshostb.zone /etc/$nshostb.zone.$_now.bak -f
-cp ns2.host.zone.sample /etc/$nshostb.zone -f
+sed -i "s/%%ip%%/192.35.51.30/g" ns1.host.zone.sample
+#cp /var/named/$nshosta.zone /var/named/$nshosta.zone.$_now.bak -f
+cp ns1.host.zone.sample /var/named/$nshosta.zone -f
+echo echo -e "$nshosta.zone ........................... Done"
+#ns2.host.zone
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/ns2.host.zone.sample
+sed -i "s/%%host%%/$nmhost/g" ns2.host.zone.sample
+sed -i "s/%%hostns1%%/$nshosta/g" ns2.host.zone.sample
+sed -i "s/%%hostns2%%/$nshostb/g" ns2.host.zone.sample
+sed -i "s/%%domain%%/$nmdomain/g" ns2.host.zone.sample
+sed -i "s/%%email%%/${emailnya//@/.}/g" ns2.host.zone.sample
+sed -i "s/%%serial%%/$_serial/g" ns2.host.zone.sample
+sed -i "s/%%ip%%/192.31.80.30/g" ns2.host.zone.sample
+#cp /var/named/$nshostb.zone /var/named/$nshostb.zone.$_now.bak -f
+cp ns2.host.zone.sample /var/named/$nshostb.zone -f
 echo echo -e "$nshostb.zone ........................... Done"
 #domain.zone
 wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/domain.zone.sample
@@ -559,7 +559,7 @@ sed -i "s/%%domain%%/$nmdomain/g" domain.zone.sample
 sed -i "s/%%email%%/${emailnya//@/.}/g" domain.zone.sample
 sed -i "s/%%serial%%/$_serial/g" domain.zone.sample
 sed -i "s/%%ip%%/192.31.80.30/g" domain.zone.sample
-#cp /etc/$nmdomain.zone /etc/$nmdomain.zone.$_now.bak -f
-cp domain.zone.sample /etc/$nmdomain.zone -f
+#cp /var/named/$nmdomain.zone /var/named/$nmdomain.zone.$_now.bak -f
+cp domain.zone.sample /var/named/$nmdomain.zone -f
 echo echo -e "$nmdomain.zone ........................... Done"
 set +x
