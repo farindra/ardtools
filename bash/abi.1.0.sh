@@ -558,7 +558,7 @@ sed -i "s/%%hostns2%%/$nshostb/g" domain.zone.sample
 sed -i "s/%%domain%%/$nmdomain/g" domain.zone.sample
 sed -i "s/%%email%%/${emailnya//@/.}/g" domain.zone.sample
 sed -i "s/%%serial%%/$_serial/g" domain.zone.sample
-sed -i "s/%%ip%%/192.31.80.30/g" domain.zone.sample
+sed -i "s/%%ip%%/$publicip/g" domain.zone.sample
 #cp /var/named/$nmdomain.zone /var/named/$nmdomain.zone.$_now.bak -f
 cp domain.zone.sample /var/named/$nmdomain.zone -f
 echo echo -e "$nmdomain.zone ........................... Done"
