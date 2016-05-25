@@ -27,7 +27,7 @@ _now=$(date '+%Y%m%d-%H%M%S%N')
 
 cd /root
 
-#jumpto 13
+jumpto 13
 #blok cek kompetibel
 #==============================================================
 
@@ -76,16 +76,11 @@ yum -y install sudo wget vim make zip unzip git chkconfig nano curl perl-libwww-
 publicip=$(curl ipecho.net/plain)
 
 #buat file log proses.
-logfile=$_now.log
-touch $_now.log
-exec > >(tee $_now.log)
-exec 2>&1
+logfile=abi.$_now.log
+exec 3>&1 4>&2
+trap 'exec 2>&4 1>&3' 0 1 2 3
+exec 1>$logfile 2>&1
 
-_now=$(date '+%Y%m%d-%H%M%S%N')
-logfile=$_now.log
-touch $_now.log
-exec > >(tee $_now.log)
-exec 2>&1
 
 UTAMA:
 #blok konfirmasi
@@ -95,11 +90,11 @@ clear
 $reset
 $orange
 echo -e "##############################################################"
-echo -e "#              ARD BASH INSTALLER Ver. $ard_version          #"
+echo -e "#            ARD BASH INSTALLER Ver. $ard_version            #"
 echo -e "##############################################################"
 echo -e "#                                                            #"
 echo -e "# Berikut paket yang akan diInstall :                        #"
-echo -e "# 1. Apache > 2                  8. squirrelmail             #"
+echo -e "# 1. Apache > 2                  8. roundcube                #"
 echo -e "# 2. MySQL 5.6                   9. Bind9                    #"
 echo -e "# 3. PHP 5.4                     10. proftpd                 #"
 echo -e "# 4. phpMyAdmin                  11. pearl                   #"
@@ -136,17 +131,17 @@ nmhost=$(hostname)
 #publicip=$(curl ipecho.net/plain)
 read -e -p "| IP public (external) server : " -i $publicip publicip
 read -e -p "| Nama Hostname               : " -i $nmhost nmhost
+read -e -p "| Nama ns1 Hostname           : " -i "ns1.contohnya.net" nshosta
+read -e -p "| Nama ns2 Hostname           : " -i "ns2.contohnya.net" nshostb
 read -e -p "| Password universal          : " -i "password" passu
 echo -e "------------------------- php.ini ----------------------------"
 read -e -p "| Mode rewrite aktif (y/t)    : " -i "y" apamode
 echo -e "-------------------------- MySQL -----------------------------"
-read -e -p "| Public remote akses (y/t)   : " -i "y" sqlakses
+read -e -p "| Akses dari public (y/t)     : " -i "y" sqlakses
 echo -e "----------------------- phpMyAdmin ---------------------------"
 read -e -p "| Akses dari public (y/t)     : " -i "y" phpmaakses
 echo -e "--------s----------------- Bind9 -----------------------------"
 read -e -p "| Nama Domain (jika ada)      : " -i "contohnya.org" nmdomain
-read -e -p "| Nama ns1    (jika ada)      : " -i "ns1.contohnya.org" nmns1
-read -e -p "| Nama ns2    (jika ada)      : " -i "ns2.contohnya.org" nmns2
 echo -e "--------------------------------------------------------------"
 CONFIGNYA:
 clear
@@ -172,14 +167,14 @@ echo -e "| 'y' = ya    'x' = keluar    'u' = ulang     'm'= menu utama "
 echo -e "--------------------------------------------------------------"
 $reset
 while true; do
-	read -e -p "Apakah data telah sesuai keinginan Anda (y/u/m/x) : " yt
-	case $yt in
-		[Yy]* ) break;;
-		[Uu]* ) jumpto CONFIG;;
-		[Mm]* ) jumpto UTAMA;;
-		[Xx]* ) exit;
-	esac
-	jumpto CONFIGNYA
+  read -e -p "Apakah data telah sesuai keinginan Anda (y/u/m/x) : " yt
+  case $yt in
+    [Yy]* ) break;;
+    [Uu]* ) jumpto CONFIG;;
+    [Mm]* ) jumpto UTAMA;;
+    [Xx]* ) exit;
+  esac
+  jumpto CONFIGNYA
 done
 
 #seting akses remote mysql
@@ -273,7 +268,7 @@ yum -y install mysql-server
 #echo -e "Setting my.cnf:"
 #echo -e "Remote Akses user root = " $sqlakses
 #if [ "$sqlakses" = "y" ] || [ "$sqlakses" = "Y" ]  ; then
-#	sed -i "s/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/var\/run\/mysqld\/mysqld.pid\nport            = 3306\nbasedir         = \/usr\ntmpdir          = \/tmp\nlanguage        = \/usr\/share\/mysql\/English\nbind-address    = $publicip/g" /etc/my.cnf
+# sed -i "s/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/var\/run\/mysqld\/mysqld.pid\nport            = 3306\nbasedir         = \/usr\ntmpdir          = \/tmp\nlanguage        = \/usr\/share\/mysql\/English\nbind-address    = $publicip/g" /etc/my.cnf
 #fi
 #echo -e "Setting OK"
 
@@ -297,9 +292,9 @@ yum -y install phpmyadmin
 echo -e "Setting phpMyAdmin.conf:"
 echo -e "Akses dari semua IP = " $phpmaakses
 if [ "$phpmaakses" = "y" ] || [ "$phpmaakses" = "Y" ]  ; then
-	sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip 127.0.0.1/# Require ip 127.0.0.1/' /etc/httpd/conf.d/phpMyAdmin.conf
-	sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip ::1/# Require ip ::1\n       Require all granted/' /etc/httpd/conf.d/phpMyAdmin.conf
-	sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Deny from All/# Deny from All/' /etc/httpd/conf.d/phpMyAdmin.conf
+  sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip 127.0.0.1/# Require ip 127.0.0.1/' /etc/httpd/conf.d/phpMyAdmin.conf
+  sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip ::1/# Require ip ::1\n       Require all granted/' /etc/httpd/conf.d/phpMyAdmin.conf
+  sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Deny from All/# Deny from All/' /etc/httpd/conf.d/phpMyAdmin.conf
 fi
 echo -e "Setting OK"
 #service httpd restart
@@ -324,6 +319,7 @@ yum -y install proftpd proftpd-mysql
 #setting file config
 echo "/bin/false" >> /etc/shells
 
+echo -e "Membuat User FTP"
 mkdir /home/FTPshared
 useradd userftp -p $passu -d /home/FTPshared -s /bin/false
 passwd userftp <<EOF
@@ -335,6 +331,9 @@ EOF
 echo -e "------------------------- BIND ----------------------------"
 yum -y update
 yum -y install bind bind-utils bind-libs
+
+echo echo -e "Setting config :"
+sed -i 's/%%host%%/$nmhost/g' nm.conf
 
 #------------------------ debug --------------------------------
 chkconfig httpd on
@@ -351,12 +350,12 @@ service proftpd start
 service named start
 
 
-13:
+
 $reset
 $orange
 clear
 echo -e "####################################################################"
-echo -e "                 ARD BASH INSTALLER Ver. 1.0 (beta)                "
+echo -e "#            ARD BASH INSTALLER Ver. $ard_version                  #"
 echo -e "####################################################################"
 echo -e "  Selamat installasi telah selesai, cek service status mulai ...  "
 $reset
@@ -415,3 +414,36 @@ done
 
 #---------------------------------------------------------------------------------------------------
 exit
+
+
+cd /root
+cp /etc/httpd/conf.d/phpMyAdmin.conf /etc/httpd/conf.d/phpMyAdmin.conf.bak -f 
+cp /root/conf/etc/httpd/conf.d/phpMyAdmin.conf /etc/httpd/conf.d/phpMyAdmin.conf -f
+service httpd restart
+
+sed -n 's:.*<IfModule mod_authz_core.c>\(.*\)</IfModule>.*:\1:p' /root/conf/etc/httpd/conf.d/test.conf
+sed -n sed -i 's/<IfModule mod_authz_core.c>/<!-- <RequireAny>/; s/<\/RequireAny>/<\/IfModule> -->/' /root/conf/etc/httpd/conf.d/test.conf
+sed -i '/<IfModule mod_authz_core.c>/,/<\/IfModule>/s/.*/<!-- & -->/' /root/conf/etc/httpd/conf.d/test.conf
+sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/.*/fuck/' /root/conf/etc/httpd/conf.d/test.conf
+
+sed -i '/<IfModule mod_authz_core.c>/,/<\/IfModule>/ s#<RequireAny>.*</RequireAny>#<RequireAny>jdk1.7.0_76</RequireAny>#' /root/conf/etc/httpd/conf.d/test.conf
+xmlstarlet sel -t -m "/IfModule mod_authz_core.c[RequireAny='monyet']" -v Value </root/conf/etc/httpd/conf.d/test.conf
+
+sed -i '/<b>/,/<\/b>/s/.*/<!-- & -->/' foo.xml
+sed -i "/<hudson/,/<\/hudson/ s#<jdk>.*</jdk>#<jdk>jdk1.7.0_76</jdk>#" config.xml
+
+
+sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip 127.0.0.1/# Require ip 127.0.0.1/' /etc/httpd/conf.d/phpMyAdmin.conf
+sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Require ip ::1/# Require ip ::1\n       Require all granted/' /etc/httpd/conf.d/phpMyAdmin.conf
+sed -i '/<Directory \/usr\/share\/phpMyAdmin\/>/,/<\/Directory>/s/Deny from All/# Deny from All/' /etc/httpd/conf.d/phpMyAdmin.conf
+
+
+sed -i 's/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/var\/run\/mysqld\/mysqld.pid\nport            = 3306\nbasedir         = \/usr\ntmpdir          = \/tmp\nlanguage        = \/usr\/share\/mysql\/English\nbind-address    = 65.55.55.2/g' tes.conf
+sed -i "s/\[mysqld\]/\[mysqld\]\nuser            = mysql\npid-file        = \/var\/run\/mysqld\/mysqld.pid\nport            = 3306\nbasedir         = \/usr\ntmpdir          = \/tmp\nlanguage        = \/usr\/share\/mysql\/English\nbind-address    = $publicip/g" /etc/my.cnf
+
+
+#cat << 'EOF' > /etc/httpd/conf.d/phpMyAdmin.conf
+
+#EOF
+13:
+
