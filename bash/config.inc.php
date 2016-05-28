@@ -10,10 +10,10 @@
 // Currently supported db_providers: mysql, pgsql, sqlite, mssql or sqlsrv
 // For examples see http://pear.php.net/manual/en/package.database.mdb2.intro-dsn.php
 // NOTE: for SQLite use absolute path: 'sqlite:////full/path/to/sqlite.db?mode=0646'
-$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcube';
-
+//$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcube';
+$config['db_dsnw'] ='%%mysql%%'
 // you can define specific table (and sequence) names prefix
-$config['db_prefix'] = 'vmail_';
+$config['db_prefix'] = '%%prefix%%';
 
 // ----------------------------------
 // IMAP
@@ -57,18 +57,18 @@ $config['smtp_pass'] = '%p';
 
 // provide an URL where a user can get support for this Roundcube installation
 // PLEASE DO NOT LINK TO THE ROUNDCUBE.NET WEBSITE HERE!
-$config['support_url'] = 'http://support.telulas.net';
+$config['support_url'] = '%%support_url%%';
 
 // replace Roundcube logo with this image
 // specify an URL relative to the document root of this Roundcube installation
 // an array can be used to specify different logos for specific template files, '*' for default logo
 // for example array("*" => "/images/roundcube_logo.png", "messageprint" => "/images/roundcube_logo_print.png")
-$config['skin_logo'] = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Canal13Chile_Vectorial.svg/2000px-Canal13Chile_Vectorial.svg.png';
+$config['skin_logo'] = '%%logo_url%%';
 
 // this key is used to encrypt the users imap password which is stored
 // in the session record (and the client cookie if remember password is enabled).
 // please provide a string of exactly 24 chars.
-$config['des_key'] = 'cbca95d8ca9f04021ce0dd0b';
+$config['des_key'] = '%%key%%';
 
 // Automatically add this domain to user names for login
 // Only for IMAP servers that require full e-mail addresses for login
@@ -80,10 +80,10 @@ $config['des_key'] = 'cbca95d8ca9f04021ce0dd0b';
 // %d - domain (http hostname $_SERVER['HTTP_HOST'] without the first part)
 // %z - IMAP domain (IMAP hostname without the first part)
 // For example %n = mail.domain.tld, %t = domain.tld
-$config['username_domain'] = 'farindra.ml';
+$config['username_domain'] = '%%domain%%';
 
 // Name your service. This is displayed on the login screen and in the window title
-$config['product_name'] = 'Telulas Webmail';
+$config['product_name'] = '%%produk%%';
 
 // ----------------------------------
 // PLUGINS
