@@ -13,7 +13,7 @@ ns2               14400 IN A %%ip%%
 %%domain%%.     14400 IN A %%ip%%
 mail.%%domain%%.      IN A %%ip%%
 %%domain%%.           IN MX 12 mail.%%domain%%.
-mail              14400 IN CNAME %%domain%%.
+mailku            14400 IN CNAME %%domain%%.
 www               14400 IN CNAME %%domain%%.
 ftp               14400 IN CNAME %%domain%%.
 webmin            14400 IN CNAME %%domain%%.
