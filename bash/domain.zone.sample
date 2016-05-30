@@ -11,17 +11,10 @@ $TTL 14400
 ns1               14400 IN A %%ip%%
 ns2               14400 IN A %%ip%%
 %%domain%%.     14400 IN A %%ip%%
-mail.%%domain%%.      IN A %%ip%%
-%%domain%%.           IN MX 12 mail.%%domain%%.
-mailku            14400 IN CNAME %%domain%%.
+%%domain%%.           IN MX 0 %%domain%%.
+mail            14400 IN CNAME %%domain%%.
 www               14400 IN CNAME %%domain%%.
 ftp               14400 IN CNAME %%domain%%.
 webmin            14400 IN CNAME %%domain%%.
 
-default_domainkey 14400 IN TXT ""
-%%domain%%.     14400 IN TXT "v=spf1 +a +mx +ip4:%%ip%% ~all"
-1464166143.farindra._domainkey.%%domain%%. IN TXT (
-        "v=DKIM1;t=s;p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwiPVDJcI0YRDq82YQeYO0ZTog"
-        "lkYJm3X/4F0E4MoIG/ZLHeFdoyLvMG62kF6SjlwBMk7MU2PvcJWfiabpyLwNTJEj"
-        "9pT9hxD+xOmczJXhXfGXwplP3uc2FPZTPEaQGVCWl3U7Z/cuJIsxhbZXuyIgP317"
-        "uIrfazX+w9rPJXgMbQIDAQAB")
+
