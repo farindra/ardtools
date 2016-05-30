@@ -249,14 +249,16 @@ cd /root
 echo -e "------------------------ Apache ----------------------------"
 yum -y install httpd 
 #service httpd start
-cat > /var/www/html/index.html <<EOF
-<html> 
-  <head> 
-    <titele>Farindra</title> 
-  </head> 
-  <body><p>ARD BASH INSTALLER Ver. $ard_version</p><p>(C)2016 Farindra</p></body> 
-</html>
-EOF
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/index.html
+\cp index.html /var/www/html/index.html -rf
+#cat > /var/www/html/index.html <<EOF
+#<html> 
+#  <head> 
+#    <titele>Farindra</title> 
+#  </head> 
+#  <body><p>ARD BASH INSTALLER Ver. $ard_version</p><p>(C)2016 Farindra</p></body> 
+#</html>
+#EOF
 
 echo -e "------------------------- PHP -----------------------------"
 yum -y install php56w php56w-opcache 
@@ -543,8 +545,7 @@ wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/config.i
 dekey=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 24)
 
 sed -i "s/%%mysql%%/mysql:\/\/roundcube:$passu@localhost\/roundcube/g" config.inc.php
-sed -i "s/%%prefix%%/''/g" config.inc.php
-sed -i "s/%%prefix%%/''/g" config.inc.php
+sed -i "s/%%prefix%%//g" config.inc.php
 sed -i "s/%%support_url%%/support@$nmdomain/g" config.inc.php
 sed -i "s/%%logo_url%%/http:\/\/ardhosting.com\/img\/logo.png/g" config.inc.php
 sed -i "s/%%key%%/$dekey/g" config.inc.php
