@@ -308,6 +308,20 @@ y
 y
 EOF
 
+mysql_secure_installation <<EOF
+$passu
+n
+y
+$sqlaksesnya
+y
+y
+EOF
+
+mysql -u root -p"$passu" -e  "USE mysql;ALTER TABLE user ADD Create_tablespace_priv ENUM('N','Y') NOT NULL DEFAULT 'N' AFTER Trigger_priv;"
+mysql -u root -p"$passu" -e  "USE mysql;ALTER TABLE user ADD plugin CHAR(64) NULL AFTER max_user_connections;"
+mysql -u root -p"$passu" -e  "USE mysql;ALTER TABLE user ADD authentication_string TEXT NULL DEFAULT NULL AFTER plugin;"
+mysql -u root -p"$passu" -e  "USE mysql;ALTER TABLE user ADD password_expired ENUM('N','Y') NOT NULL DEFAULT 'N' AFTER authentication_string;"
+
 #service mysqld restart
 
 echo -e "----------------------- phpMyAdmin ------------------------"
@@ -388,7 +402,7 @@ sed -i "s/%%ip%%/$publicip/g" domain.zone.sample
 #\cp /var/named/$nmdomain.zone /var/named/$nmdomain.zone.$_now.bak -rf
 \cp domain.zone.sample /var/named/$nmdomain.zone -rf
 echo echo -e "$nmdomain.zone ........................... Done"
-exit
+
 echo -e "------------------------- postfix -------------------------"
 cd /root
 yum -y update
@@ -431,6 +445,41 @@ echo "$nmemail@$nmdomain:$devpass" > /etc/dovecot/passwd
 chown root: /etc/dovecot/passwd
 chmod 600 /etc/dovecot/passwd
 
+echo -e "------------------------- roundcube -------------------------"
+cd /root
+yum -y update
+mysql -u root -p"$passu" -e 'CREATE DATABASE IF NOT EXISTS roundcube;GRANT ALL PRIVILEGES ON roundcube . * TO roundcube@localhost IDENTIFIED BY "'$passu'";FLUSH PRIVILEGES;'
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/90-roundcube.conf
+\cp /etc/httpd/conf.d/90-roundcube.conf{,.$_now.bak} -rf
+\cp 90-roundcube.conf /etc/httpd/conf.d/90-roundcube.conf -rf
+
+curl -L "http://sourceforge.net/projects/roundcubemail/files/latest/download?source=files" > /tmp/roundcube-latest.tar.gz
+tar -zxf /tmp/roundcube-latest.tar.gz -C /var/www/html
+rm -f /tmp/roundcube-latest.tar.gz
+cd /var/www/html
+mv roundcubemail-* roundcube
+chown root: -R roundcube/
+chown apache: -R roundcube/temp/
+chown apache: -R roundcube/logs/
+
+mysql -u roundcube -p"$passu" roundcube < /var/www/html/roundcube/SQL/mysql.initial.sql
+sed -i "s/;date.timezone.*/date.timezone\=Asia\/Jakarta/g" /etc/php.ini
+
+cd /root
+wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/config.inc.php
+dekey=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 24)
+
+sed -i "s/%%mysql%%/mysql:\/\/roundcube:$passu@localhost\/roundcube/g" config.inc.php
+sed -i "s/%%prefix%%//g" config.inc.php
+sed -i "s/%%support_url%%/support@$nmdomain/g" config.inc.php
+sed -i "s/%%logo_url%%/http:\/\/ardhosting.com\/img\/logo.png/g" config.inc.php
+sed -i "s/%%key%%/$dekey/g" config.inc.php
+sed -i "s/%%domain%%/$nmdomain/g" config.inc.php
+sed -i "s/%%produk%%/Ard Email/g" config.inc.php
+\cp /var/www/html/roundcube/config/config.inc.php{,.$_now.bak} -rf
+\cp config.inc.php /var/www/html/roundcube/config/config.inc.php -rf
+echo echo -e "config.inc.php ........................... Done"
+
 
 echo -e "------------------------- ssl/TLS -------------------------"
 cd /root
@@ -465,18 +514,21 @@ yum -y install mod_ssl
 sed -i "s/SSLCertificateFile.*/SSLCertificateFile \/etc\/pki\/tls\/certs\/$nmdomain.crt/g" /etc/httpd/conf.d/ssl.conf
 sed -i "s/SSLCertificateKeyFile.*/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/$nmdomain.key/g" /etc/httpd/conf.d/ssl.conf
 
+#[roundcube]
 \cp /etc/httpd/conf.d/90-roundcube.conf{,$_now.bak} -rf
 echo "
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^/?webmail/(.*) https://%{SERVER_NAME}/webmail/$1 [R,L]" >> /etc/httpd/conf.d/90-roundcube.conf
 
+#[dovecot]
 \cp /etc/dovecot/dovecot.conf{,$_now.bak} -rf
 
 sed -i "s/ssl =.*/ssl = yes/g" /etc/dovecot/dovecot.conf
 sed -i "s/#ssl_cert =.*/ssl_cert = <\/etc\/pki\/tls\/certs\/$nmdomain.crt/g" /etc/dovecot/dovecot.conf
 sed -i "s/#ssl_key =.*/ssl_key = <\/etc\/pki\/tls\/private\/$nmdomain.key/g" /etc/dovecot/dovecot.conf
- 
+
+#[postfix]
 \cp /etc/postfix/main.cf{,$_now.bak} -rf
 echo "
 smtpd_use_tls = yes
@@ -541,40 +593,6 @@ milter_default_action   = accept
 milter_protocol         = 2
 " >> /etc/postfix/main.cf
 
-echo -e "------------------------- roundcube -------------------------"
-cd /root
-yum -y update
-mysql -u root -p"$passu" -e 'CREATE DATABASE IF NOT EXISTS roundcube;GRANT ALL PRIVILEGES ON roundcube . * TO roundcube@localhost IDENTIFIED BY "'$passu'";FLUSH PRIVILEGES;'
-wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/90-roundcube.conf
-\cp /etc/httpd/conf.d/90-roundcube.conf{,.$_now.bak} -rf
-\cp 90-roundcube.conf /etc/httpd/conf.d/90-roundcube.conf -rf
-
-curl -L "http://sourceforge.net/projects/roundcubemail/files/latest/download?source=files" > /tmp/roundcube-latest.tar.gz
-tar -zxf /tmp/roundcube-latest.tar.gz -C /var/www/html
-rm -f /tmp/roundcube-latest.tar.gz
-cd /var/www/html
-mv roundcubemail-* roundcube
-chown root: -R roundcube/
-chown apache: -R roundcube/temp/
-chown apache: -R roundcube/logs/
-
-mysql -u roundcube -p"$passu" roundcube < /var/www/html/roundcube/SQL/mysql.initial.sql
-sed -i "s/;date.timezone.*/date.timezone\=Asia\/Jakarta/g" /etc/php.ini
-
-cd /root
-wget -N https://raw.githubusercontent.com/farindra/ardtools/master/bash/config.inc.php
-dekey=$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 24)
-
-sed -i "s/%%mysql%%/mysql:\/\/roundcube:$passu@localhost\/roundcube/g" config.inc.php
-sed -i "s/%%prefix%%//g" config.inc.php
-sed -i "s/%%support_url%%/support@$nmdomain/g" config.inc.php
-sed -i "s/%%logo_url%%/http:\/\/ardhosting.com\/img\/logo.png/g" config.inc.php
-sed -i "s/%%key%%/$dekey/g" config.inc.php
-sed -i "s/%%domain%%/$nmdomain/g" config.inc.php
-sed -i "s/%%produk%%/Ard Email/g" config.inc.php
-\cp /var/www/html/roundcube/config/config.inc.php{,.$_now.bak} -rf
-\cp config.inc.php /var/www/html/roundcube/config/config.inc.php -rf
-echo echo -e "config.inc.php ........................... Done"
 
 echo -e "------------------------- proftpd -------------------------"
 cd /root
@@ -608,8 +626,6 @@ service postfix start
 service dovecot start
 service proftpd start
 service named start
-
-
 
 
 $reset
@@ -683,7 +699,7 @@ exit
 set -x
 nmhost=$(hostname)
 nmemail=admin
-nmdomain=farindra.xyz
+nmdomain=milikku.com
 passu=password
 _now=$(date '+%Y%m%d-%H%M%S%N')
 publicip=$(curl ipecho.net/plain)
@@ -735,4 +751,17 @@ milter_default_action   = accept
 milter_protocol         = 2
 " >> /etc/postfix/main.cf
 
+service httpd restart
+echo -e "------------------------ MySQL (mysqld) ----------------------------"
+service mysqld restart
+echo -e "--------------------------- postfix --------------------------------"
+service postfix restart
+echo -e "--------------------------- dovecot --------------------------------"
+service dovecot restart
+echo -e "-------------------------- openDkim --------------------------------"
+service opendkim restart
+echo -e "--------------------------- proftpd --------------------------------"
+service proftpd restart
+echo -e "------------------------- Bind (named) -----------------------------"
+service named restart
 set +x
